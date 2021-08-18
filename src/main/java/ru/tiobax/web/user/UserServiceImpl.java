@@ -84,26 +84,12 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Override
     public void updateUser(User user, String password) {
         log.info("Update user {} to database", user.getEmail());
-        User userWillBeUpdate = userRepository.findByEmail(user.getEmail());
-        if (!userWillBeUpdate.getEmail().equals(user.getEmail())) {
-            userWillBeUpdate.setEmail(user.getEmail());
+        if (password.equals("")) {
+            user.setPassword(userRepository.findByEmail(user.getEmail()).getPassword());
+        } else {
+            user.setPassword(passwordEncoder.encode(password));
         }
-        if (!userWillBeUpdate.getFirst_name().equals(user.getFirst_name())) {
-            userWillBeUpdate.setFirst_name(user.getFirst_name());
-        }
-        if (!userWillBeUpdate.getLast_name().equals(user.getLast_name())) {
-            userWillBeUpdate.setLast_name(user.getLast_name());
-        }
-        if (!userWillBeUpdate.getDob().equals(user.getDob())) {
-            userWillBeUpdate.setDob(user.getDob());
-        }
-        if (!password.equals("")) {
-            userWillBeUpdate.setPassword(passwordEncoder.encode(password));
-        }
-        if (userWillBeUpdate.isEnabled() != user.isEnabled()) {
-            userWillBeUpdate.setEnabled(user.isEnabled());
-        }
-        userWillBeUpdate.setRoles(new HashSet<Role>());
+        userRepository.save(user);
     }
 
     @Override
